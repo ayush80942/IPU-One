@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ipu_one/features/home/presentation/home_view.dart';
 import 'package:ipu_one/features/notices/presenation/notices_view.dart';
-import 'package:ipu_one/features/profile/profile_view.dart';
+import 'package:ipu_one/features/profile/presentation/profile_view.dart';
 import 'package:ipu_one/features/requests/presentation/requests_view.dart';
 import 'package:ipu_one/features/documents/presentation/docs_view.dart';
 import 'app_bottom_nav.dart';

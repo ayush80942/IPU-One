@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ipu_one/features/auth/presentation/pages/enroll_page.dart';
+import 'package:ipu_one/features/auth/presentation/pages/otp_page.dart';
 import 'core/theme/app_theme.dart';
-import 'features/auth/presentation/sign_in_view.dart';
 import 'core/navigation/app_shell.dart';
 
 class MyApp extends StatelessWidget {
@@ -8,13 +9,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isLoggedIn = true;
+    final bool isLoggedIn = false;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'IPU One',
       theme: AppTheme.lightTheme(),
-      home: isLoggedIn ? const AppShell() : const SignInView(),
+      home: isLoggedIn ? const AppShell() : const EnrollView(),
     );
   }
 }

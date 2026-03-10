@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ipu_one/features/auth/data/models/student_model.dart';
+import 'package:ipu_one/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:ipu_one/features/auth/presentation/cubit/auth_state.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authState = context.watch<AuthCubit>().state;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+
+    String name = "";
+    late StudentModel student;
+
+    if (authState is AuthAuthenticated) {
+      name = authState.student.name;
+      student = authState.student;
+    }
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -20,12 +33,11 @@ class HomeView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               /// Header
-              _buildHeader(context),
+              _buildHeader(context, name.split(" ")[0]),
 
               /// Student Summary Card
-              _buildStudentCard(context),
+              _buildStudentCard(context, student),
 
               /// Latest Notices
               _buildLatestNotices(context),
@@ -46,7 +58,7 @@ class HomeView extends StatelessWidget {
 
   // ================= HEADER =================
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(BuildContext context, String name) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
@@ -54,18 +66,18 @@ class HomeView extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          CircleAvatar(
-            backgroundColor: colors.primary.withOpacity(0.1),
-            child: Icon(Icons.person, color: colors.primary),
-          ),
-          const SizedBox(width: 12),
+          // CircleAvatar(
+          //   backgroundColor: colors.primary.withOpacity(0.1),
+          //   child: Icon(Icons.person, color: colors.primary),
+          // ),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Welcome back,", style: theme.textTheme.bodyMedium),
                 Text(
-                  "Good Morning, Aryan",
+                  "Good Morning, $name",
                   style: theme.textTheme.headlineMedium,
                 ),
               ],
@@ -98,7 +110,7 @@ class HomeView extends StatelessWidget {
 
   // ================= STUDENT CARD =================
 
-  Widget _buildStudentCard(BuildContext context) {
+  Widget _buildStudentCard(BuildContext context, StudentModel student) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
@@ -112,25 +124,22 @@ class HomeView extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const CircleAvatar(
-                    radius: 28,
-                    child: Icon(Icons.person),
-                  ),
+                  const CircleAvatar(radius: 28, child: Icon(Icons.person)),
                   const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "ACTIVE STUDENT",
+                        student.name,
+                        style: theme.textTheme.headlineMedium,
+                      ),
+                      Text(
+                        student.enrollmentNo,
                         style: theme.textTheme.labelMedium?.copyWith(
                           color: colors.primary,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1,
                         ),
-                      ),
-                      Text(
-                        "Aryan Sharma",
-                        style: theme.textTheme.headlineMedium,
                       ),
                     ],
                   ),
@@ -162,17 +171,17 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _infoItem(BuildContext context,
-      {required String title, required String value}) {
+  Widget _infoItem(
+    BuildContext context, {
+    required String title,
+    required String value,
+  }) {
     final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title.toUpperCase(),
-          style: theme.textTheme.labelMedium,
-        ),
+        Text(title.toUpperCase(), style: theme.textTheme.labelMedium),
         const SizedBox(height: 4),
         Text(
           value,
@@ -199,13 +208,15 @@ class HomeView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                Text("Latest Notices",
-                    style: theme.textTheme.headlineMedium),
+                Text("Latest Notices", style: theme.textTheme.headlineMedium),
                 const Spacer(),
-                Text("View All",
-                    style: TextStyle(
-                        color: colors.primary,
-                        fontWeight: FontWeight.w600)),
+                Text(
+                  "View All",
+                  style: TextStyle(
+                    color: colors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ),
@@ -245,8 +256,7 @@ class HomeView extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: colors.primary,
                   borderRadius: BorderRadius.circular(6),
@@ -254,27 +264,27 @@ class HomeView extends StatelessWidget {
                 child: const Text(
                   "URGENT",
                   style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const Spacer(),
-              Text("Oct 24",
-                  style: theme.textTheme.bodySmall),
+              Text("Oct 24", style: theme.textTheme.bodySmall),
             ],
           ),
           const SizedBox(height: 12),
           Text(
             "End Term Exams Schedule",
-            style: theme.textTheme.bodyLarge
-                ?.copyWith(fontWeight: FontWeight.bold),
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
             "The datesheet for May/June 2024 exams is now released...",
-            style: theme.textTheme.bodyMedium
-                ?.copyWith(color: Colors.grey),
+            style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
           ),
         ],
       ),
@@ -291,30 +301,35 @@ class HomeView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Pending Requests",
-              style: theme.textTheme.headlineMedium),
+          Text("Pending Requests", style: theme.textTheme.headlineMedium),
           const SizedBox(height: 12),
-          _requestTile(context,
-              title: "Character Certificate",
-              date: "18 Oct",
-              status: "Pending",
-              color: Colors.amber),
+          _requestTile(
+            context,
+            title: "Character Certificate",
+            date: "18 Oct",
+            status: "Pending",
+            color: Colors.amber,
+          ),
           const SizedBox(height: 10),
-          _requestTile(context,
-              title: "Academic Transcript",
-              date: "15 Oct",
-              status: "Processing",
-              color: Colors.blue),
+          _requestTile(
+            context,
+            title: "Academic Transcript",
+            date: "15 Oct",
+            status: "Processing",
+            color: Colors.blue,
+          ),
         ],
       ),
     );
   }
 
-  Widget _requestTile(BuildContext context,
-      {required String title,
-      required String date,
-      required String status,
-      required Color color}) {
+  Widget _requestTile(
+    BuildContext context, {
+    required String title,
+    required String date,
+    required String status,
+    required Color color,
+  }) {
     final theme = Theme.of(context);
 
     return Card(
@@ -323,13 +338,15 @@ class HomeView extends StatelessWidget {
           backgroundColor: color.withOpacity(0.1),
           child: Icon(Icons.description, color: color),
         ),
-        title: Text(title,
-            style: theme.textTheme.bodyLarge
-                ?.copyWith(fontWeight: FontWeight.w600)),
+        title: Text(
+          title,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         subtitle: Text("Requested: $date"),
         trailing: Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             color: color.withOpacity(0.15),
             borderRadius: BorderRadius.circular(20),
@@ -337,9 +354,10 @@ class HomeView extends StatelessWidget {
           child: Text(
             status.toUpperCase(),
             style: TextStyle(
-                color: color,
-                fontSize: 11,
-                fontWeight: FontWeight.bold),
+              color: color,
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
@@ -365,9 +383,10 @@ class HomeView extends StatelessWidget {
             const Text(
               "Documents Ready!",
               style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold),
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8),
             const Text(
@@ -382,7 +401,7 @@ class HomeView extends StatelessWidget {
               ),
               onPressed: () {},
               child: const Text("View Details"),
-            )
+            ),
           ],
         ),
       ),
